@@ -9,8 +9,8 @@
       --bg-dark: #0f0510;
       --primary: #e60049;
       --gold: #d4af37;
-      --glass-bg: rgba(25, 10, 25, 0.7);
-      --glass-border: rgba(212, 175, 55, 0.3);
+      --glass-bg: rgba(25, 10, 25, 0.75);
+      --glass-border: rgba(212, 175, 55, 0.35);
       --text-light: #f8f9fa;
     }
 
@@ -29,7 +29,6 @@
       position: relative;
     }
 
-    /* Fondo dinámico canvas */
     #heartsCanvas {
       position: fixed;
       top: 0;
@@ -50,7 +49,7 @@
 
     header {
       text-align: center;
-      padding: 50px 20px 30px;
+      padding: 40px 20px 20px;
     }
 
     header h1 {
@@ -64,6 +63,15 @@
       font-size: 1.2rem;
       color: #e0d0e0;
       letter-spacing: 1px;
+    }
+
+    .music-player-card {
+      background: rgba(20, 5, 20, 0.85);
+      border: 1px solid var(--gold);
+      border-radius: 15px;
+      padding: 15px;
+      margin-bottom: 30px;
+      text-align: center;
     }
 
     .card {
@@ -86,12 +94,12 @@
       letter-spacing: 2px;
     }
 
-    /* Quiz Styling */
     .quiz-progress {
       text-align: center;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       color: var(--gold);
       margin-bottom: 15px;
+      font-weight: bold;
     }
 
     .question-text {
@@ -99,6 +107,7 @@
       font-weight: 600;
       margin-bottom: 20px;
       text-align: center;
+      line-height: 1.4;
     }
 
     .options-grid {
@@ -125,12 +134,12 @@
     }
 
     .option-btn.correct {
-      background: rgba(40, 167, 69, 0.3) !important;
+      background: rgba(40, 167, 69, 0.4) !important;
       border-color: #28a745 !important;
     }
 
     .option-btn.wrong {
-      background: rgba(220, 53, 69, 0.3) !important;
+      background: rgba(220, 53, 69, 0.4) !important;
       border-color: #dc3545 !important;
     }
 
@@ -141,6 +150,7 @@
       text-align: center;
       padding: 25px;
       border-radius: 15px;
+      position: relative;
     }
 
     .coupon-title {
@@ -166,10 +176,17 @@
       border-radius: 30px;
       cursor: pointer;
       box-shadow: 0 4px 15px rgba(230, 0, 73, 0.4);
-      transition: transform 0.2s;
+      transition: transform 0.2s, background 0.3s;
     }
 
-    .btn-action:hover {
+    .btn-action:disabled {
+      background: #444;
+      color: #888;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-action:not(:disabled):hover {
       transform: scale(1.05);
     }
 
@@ -238,11 +255,13 @@
     .modal-content h2 {
       color: var(--gold);
       margin-bottom: 15px;
+      font-size: 1.8rem;
     }
 
     .modal-content p {
       margin-bottom: 25px;
       line-height: 1.6;
+      font-size: 1.1rem;
     }
   </style>
 </head>
@@ -255,6 +274,12 @@
       <h1>Alejandro & Alexia</h1>
       <p>Un universo construido a nuestra medida</p>
     </header>
+
+    <!-- MUSIC PLAYER -->
+    <div class="music-player-card">
+      <p style="color: var(--gold); font-weight: bold; margin-bottom: 10px;">🎵 Nuestra Canción Oficial: Henry Lau - It's You</p>
+      <iframe style="border-radius:12px" width="100%" height="80" src="https://www.youtube.com/embed/VB9101LT-6E?enablejsapi=1" title="It's You - Henry Lau" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
 
     <!-- QUIZ CARD -->
     <div class="card" id="quizCard">
@@ -270,7 +295,8 @@
       <div class="coupon-card">
         <div class="coupon-title">Pase de Victoria Absoluta</div>
         <div class="coupon-desc">"Cupón de Alejandro" — Válido para exigir lo que desees, en el momento que quieras, con mi respaldo total e inmediato.</div>
-        <button class="btn-action" onclick="redeemCoupon()">Canjear Cupón</button>
+        <p id="couponLockMsg" style="color: #ff6b6b; font-weight: bold; margin-bottom: 15px;">🔒 Para desbloquear este cupón debes responder CORRECTAMENTE las 11 preguntas del Quiz.</p>
+        <button class="btn-action" id="btnCoupon" disabled onclick="redeemCoupon()">Canjear Cupón</button>
       </div>
     </div>
 
@@ -286,17 +312,50 @@
     </div>
   </div>
 
-  <!-- MODAL -->
+  <!-- MODALS -->
   <div class="modal" id="modal">
     <div class="modal-content">
       <h2 id="modalTitle">¡Confirmado!</h2>
       <p id="modalBody"></p>
-      <button class="btn-action" onclick="closeModal()">Cerrar</button>
+      <button class="btn-action" onclick="closeModal()">Entendido</button>
     </div>
   </div>
 
   <script>
-    // Canvas Hearts Animation
+    // Web Audio Synthesizer Sound Effects
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playKissSound() {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.15);
+      gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.15);
+    }
+
+    function playBooSound() {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+      osc.frequency.linearRampToValueAtTime(80, audioCtx.currentTime + 0.4);
+      gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.4);
+    }
+
+    // Canvas Background
     const canvas = document.getElementById('heartsCanvas');
     const ctx = canvas.getContext('2d');
     let width = canvas.width = window.innerWidth;
@@ -307,7 +366,7 @@
       height = canvas.height = window.innerHeight;
     });
 
-    const hearts = Array.from({ length: 25 }, () => ({
+    const hearts = Array.from({ length: 30 }, () => ({
       x: Math.random() * width,
       y: Math.random() * height,
       size: Math.random() * 12 + 6,
@@ -333,94 +392,94 @@
     }
     drawHearts();
 
-    // Quiz Questions Data
+    // Quiz Questions Data (Ordered Storyline)
     const questions = [
       {
-        q: "¿Cómo se encendió la chispa de esta historia?",
+        q: "1. ¿Cómo se encendió la chispa de esta historia?",
         options: [
-          { text: "En un debate en un grupo de Facebook sobre la Liga Kalos, donde se discutió si Ash ganaría la liga y Alexia tenía razón.", correct: true },
-          { text: "En una publicación sobre si Serena y Ash volverán a verse.", correct: false },
-          { text: "En un debate con Max y Joako sobre quién es la waifu más bonita de Pokémon.", correct: false }
+          { text: "A) En un debate en un grupo de Facebook sobre la Liga Kalos, donde se discutió si Ash ganaría la liga y Alexia tenía razón.", correct: true },
+          { text: "B) En una publicación sobre si Serena y Ash volverán a verse.", correct: false },
+          { text: "C) En un debate con Max y Joako sobre quién es la waifu más bonita de Pokémon.", correct: false }
         ]
       },
       {
-        q: "¿Cuál fue el primer manga que le recomendó Alejandro a Alexia?",
+        q: "2. ¿Cuál fue el primer manga que le recomendó Alejandro a Alexia?",
         options: [
-          { text: "Tokio Ghoul", correct: true },
-          { text: "Domestic na Kanojo", correct: false },
-          { text: "Jujutsu Kaisen", correct: false }
+          { text: "A) Tokio Ghoul", correct: true },
+          { text: "B) Domestic na Kanojo", correct: false },
+          { text: "C) Jujutsu Kaisen", correct: false }
         ]
       },
       {
-        q: "¿Cuál fue nuestro primer apodo?",
+        q: "3. ¿Cuál fue nuestro primer apodo?",
         options: [
-          { text: "Honey y Darling", correct: true },
-          { text: "Amo y Sumisa", correct: false },
-          { text: "Amor y bebecita", correct: false }
+          { text: "A) Honey y Darling", correct: true },
+          { text: "B) Amo y Sumisa", correct: false },
+          { text: "C) Amor y bebecita", correct: false }
         ]
       },
       {
-        q: "¿Cuál fue nuestro primer drama de romance?",
+        q: "4. ¿Cuál fue nuestro primer drama de romance?",
         options: [
-          { text: "While You Were Sleeping", correct: false },
-          { text: "The Heirs", correct: true },
-          { text: "Pinocchio", correct: false }
+          { text: "A) While You Were Sleeping", correct: false },
+          { text: "B) The Heirs", correct: true },
+          { text: "C) Pinocchio", correct: false }
         ]
       },
       {
-        q: "¿Cuál es nuestro anime en común favorito?",
+        q: "5. ¿Cuál es nuestro anime en común favorito?",
         options: [
-          { text: "Sword Art Online", correct: true },
-          { text: "Clannad", correct: false },
-          { text: "Kuzu no Honkai", correct: false }
+          { text: "A) Sword Art Online", correct: true },
+          { text: "B) Clannad", correct: false },
+          { text: "C) Kuzu no Honkai", correct: false }
         ]
       },
       {
-        q: "¿Cuál fue nuestro juego favorito en común?",
+        q: "6. ¿Cuál fue nuestro juego favorito en común?",
         options: [
-          { text: "Free Fire", correct: true },
-          { text: "Clash of Clans", correct: false },
-          { text: "Clash Royale", correct: false }
+          { text: "A) Free Fire", correct: true },
+          { text: "B) Clash of Clans", correct: false },
+          { text: "C) Clash Royale", correct: false }
         ]
       },
       {
-        q: "Cuando la pantalla se enciende para una partida de Parchís o Pool, ¿cuál es la ley?",
+        q: "7. Cuando la pantalla se enciende para una partida de Parchís o Pool, ¿cuál es la ley?",
         options: [
-          { text: "Se compite sin piedad; hay apuestas en juego, rivalidad pura y la victoria se celebra como se debe.", correct: true },
-          { text: "Alejandro vence a todos y gana la apuesta.", correct: false },
-          { text: "Alexia se burla del rival y baja el nivel por estar discutiendo.", correct: false }
+          { text: "A) Se compite sin piedad; hay apuestas en juego, rivalidad pura y la victoria se celebra como se debe.", correct: true },
+          { text: "B) Alejandro vence a todos y gana la apuesta.", correct: false },
+          { text: "C) Alexia se burla del rival y baja el nivel por estar discutiendo.", correct: false }
         ]
       },
       {
-        q: "¿Cuál es el himno absoluto de nuestra historia de amor?",
+        q: "8. ¿Cuál es el himno absoluto de nuestra historia de amor?",
         options: [
-          { text: "It's You – Henry Lau (While You Were Sleeping)", correct: true },
-          { text: "Nothing Like Us – Justin Bieber", correct: false },
-          { text: "Die In Your Arms – Justin Bieber", correct: false }
+          { text: "A) It's You – Henry Lau (While You Were Sleeping)", correct: true },
+          { text: "B) Nothing Like Us – Justin Bieber", correct: false },
+          { text: "C) Die In Your Arms – Justin Bieber", correct: false }
         ]
       },
       {
-        q: "Cuando el día termina y el mundo se queda en silencio, ¿cuál es nuestro refugio?",
+        q: "9. Cuando el día termina y el mundo se queda en silencio, ¿cuál es nuestro refugio?",
         options: [
-          { text: "Conectarnos en nuestro propio universo: un buen drama coreano, la música exacta y charlas sinceras que arreglan el alma.", correct: true },
-          { text: "Compartir vídeos de Instagram y TikTok en WhatsApp.", correct: false },
-          { text: "Dormir en llamada.", correct: false }
+          { text: "A) Conectarnos en nuestro propio universo: un buen drama coreano, la música exacta y charlas sinceras que arreglan el alma.", correct: true },
+          { text: "B) Compartir vídeos de Instagram y TikTok en WhatsApp.", correct: false },
+          { text: "C) Dormir en llamada.", correct: false }
         ]
       },
       {
-        q: "En esta relación, ¿quién lleva el mando y la dirección?",
+        q: "10. En esta relación, ¿quién lleva el mando y la dirección?",
         options: [
-          { text: "Alejandro, cuando toma las decisiones con carácter y protege lo que es suyo.", correct: true },
-          { text: "Alejandro, cuando impone las reglas del juego y reclama sus victorias.", correct: true },
-          { text: "Alejandro, cuando demuestra con actos firmes que su amor no se negocia.", correct: true }
+          { text: "A) Alejandro, cuando toma las decisiones con carácter y protege lo que es suyo.", correct: true },
+          { text: "B) Alejandro, cuando impone las reglas del juego y reclama sus victorias.", correct: true },
+          { text: "C) Alejandro, cuando demuestra con actos firmes que su amor no se negocia.", correct: true }
         ]
       },
       {
-        q: "¿Cuál fue nuestra fecha especial?",
+        q: "11. ¿Cuál fue nuestra fecha especial?",
         options: [
-          { text: "11 de abril", correct: false },
-          { text: "11 de agosto", correct: true },
-          { text: "11 de octubre", correct: false }
+          { text: "A) 11 de abril", correct: false },
+          { text: "B) 11 de agosto", correct: true },
+          { text: "C) 11 de octubre", correct: false }
         ]
       }
     ];
@@ -452,34 +511,64 @@
       if (isCorrect) {
         btn.classList.add('correct');
         score++;
+        playKissSound();
+        setTimeout(() => {
+          advanceQuiz();
+        }, 800);
       } else {
         btn.classList.add('wrong');
+        playBooSound();
+        showSpankAlert(() => {
+          advanceQuiz();
+        });
       }
+    }
 
-      setTimeout(() => {
-        currentQ++;
-        if (currentQ < questions.length) {
-          renderQuestion();
-        } else {
-          showQuizResults();
-        }
-      }, 1000);
+    function advanceQuiz() {
+      currentQ++;
+      if (currentQ < questions.length) {
+        renderQuestion();
+      } else {
+        showQuizResults();
+      }
+    }
+
+    function showSpankAlert(callback) {
+      document.getElementById('modalTitle').innerText = "¡RESPUESTA INCORRECTA! 👎";
+      document.getElementById('modalBody').innerText = "¡Te equivocaste mi linda niña! Alejandro te va a nalguear 😈🔥";
+      document.getElementById('modal').style.display = 'flex';
+      
+      const closeBtn = document.querySelector('#modal button');
+      closeBtn.onclick = () => {
+        closeModal();
+        callback();
+      };
     }
 
     function showQuizResults() {
       const card = document.getElementById('quizCard');
+      const perfect = (score === questions.length);
+
+      if (perfect) {
+        document.getElementById('btnCoupon').disabled = false;
+        document.getElementById('couponLockMsg').innerHTML = "✨ <b>¡CUPÓN DESBLOQUEADO!</b> Has acertado todas las respuestas.";
+        document.getElementById('couponLockMsg').style.color = "#28a745";
+      } else {
+        document.getElementById('couponLockMsg').innerHTML = `🔒 Tuviste ${questions.length - score} error(es). Para desbloquear el cupón debes acertar 11/11. <br><button onclick="location.reload()" style="margin-top:10px; background:var(--gold); border:none; padding:8px 15px; border-radius:15px; cursor:pointer; font-weight:bold;">Reintentar Quiz</button>`;
+      }
+
       card.innerHTML = `
         <h2 class="section-title">¡Quiz Completado!</h2>
         <p style="text-align: center; font-size: 1.2rem; margin-top: 15px;">
-          Demostraste conocer cada detalle de nuestro camino, mi linda niña.<br><br>
-          <strong style="color: var(--gold); font-size: 1.4rem;">Puntaje: ${score} / ${questions.length}</strong>
+          ${perfect ? "¡Perfecto, mi linda niña! Conocemos cada rincón de nuestra historia." : "Estuviste cerca, mi amor."}<br><br>
+          <strong style="color: var(--gold); font-size: 1.5rem;">Puntaje Final: ${score} / ${questions.length}</strong>
         </p>
       `;
     }
 
     renderQuestion();
 
-    // Runaway "No" Button Logic
+    // Runaway "No" Button
     const btnNo = document.getElementById('btnNo');
     btnNo.style.right = '20px';
 
@@ -499,17 +588,24 @@
       moveNoButton();
     });
 
-    // Modals & Actions
+    // Modal Operations
     function redeemCoupon() {
-      document.getElementById('modalTitle').innerText = "¡Cupón Canjeado!";
-      document.getElementById('modalBody').innerText = "Has activado tu Pase de Victoria Absoluta. Alejandro responderá e imprimirá su cumplimiento inmediato.";
+      document.getElementById('modalTitle').innerText = "¡Cupón Activado!";
+      document.getElementById('modalBody').innerText = "Has reclamado tu Pase de Victoria Absoluta. Alejandro atenderá tu exigencia de inmediato.";
       document.getElementById('modal').style.display = 'flex';
+      
+      const closeBtn = document.querySelector('#modal button');
+      closeBtn.onclick = closeModal;
     }
 
     function acceptProposal() {
-      document.getElementById('modalTitle').innerText = "¡Dijo que SÍ!";
-      document.getElementById('modalBody').innerText = "Oficialmente te has convertido en mi esposa. Prometo protegerte, dirigirte con carácter y amarte para siempre, Alexia.";
+      playKissSound();
+      document.getElementById('modalTitle').innerText = "¡OFICIALMENTE COMPROMETIDOS!";
+      document.getElementById('modalBody').innerText = "Has dicho que SÍ. Desde hoy y para siempre te cuidaré, seré tu protector y caminaremos juntos como esposos, Alexia.";
       document.getElementById('modal').style.display = 'flex';
+      
+      const closeBtn = document.querySelector('#modal button');
+      closeBtn.onclick = closeModal;
     }
 
     function closeModal() {
