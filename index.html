@@ -189,7 +189,349 @@
                 </div>
             </div>
         </section>
+<!-- ======================================================= -->
+<!-- INICIO: SECCIÓN DEL JUEGO PIXEL DE DRAGONES ROMÁNTICO  -->
+<!-- ======================================================= -->
+<style>
+  .dragon-game-card {
+    background: rgba(45, 2, 8, 0.85);
+    border: 2px solid #d4af37;
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 40px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
 
+  .dragon-game-title {
+    color: #d4af37;
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+  }
+
+  .dragon-game-subtitle {
+    color: #f8f9fa;
+    font-size: 1rem;
+    margin-bottom: 15px;
+  }
+
+  .game-container {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  #dragonCanvas {
+    width: 100%;
+    height: 300px;
+    background: #110104;
+    border: 3px solid #d4af37;
+    border-radius: 12px;
+    display: block;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+    image-rendering: pixelated;
+    cursor: pointer;
+  }
+
+  .game-controls {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+
+  .btn-game {
+    background: linear-gradient(135deg, #c8102e, #800020);
+    color: #fff;
+    border: 1px solid #d4af37;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(200, 16, 46, 0.4);
+    transition: transform 0.15s, background 0.3s;
+  }
+
+  .btn-game:hover {
+    transform: scale(1.05);
+    background: linear-gradient(135deg, #e60049, #990033);
+  }
+
+  .game-stats {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+    color: #d4af37;
+    font-weight: bold;
+    font-size: 1.1rem;
+  }
+</style>
+
+<div class="dragon-game-card">
+  <h2 class="dragon-game-title">🐉 El Vuelo del Dragón de Amor</h2>
+  <p class="dragon-game-subtitle">Ayuda al dragón a recolectar los corazones para Alexia. Toca la pantalla, haz clic o usa la barra espaciadora para volar.</p>
+  
+  <div class="game-container">
+    <canvas id="dragonCanvas" width="600" height="300"></canvas>
+  </div>
+
+  <div class="game-stats">
+    <div>Corazones: <span id="dragonScore">0</span> / 10</div>
+    <div>Puntuación Máxima: <span id="dragonHighScore">0</span></div>
+  </div>
+
+  <div class="game-controls">
+    <button class="btn-game" id="btnStartGame" onclick="startDragonGame()">🎮 Iniciar / Reiniciar Juego</button>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const canvas = document.getElementById('dragonCanvas');
+    const ctx = canvas.getContext('2d');
+    const scoreEl = document.getElementById('dragonScore');
+    const highScoreEl = document.getElementById('dragonHighScore');
+
+    let animationId;
+    let gameRunning = false;
+    let score = 0;
+    let highScore = 0;
+
+    // Configuración del Dragón Pixel Art
+    const dragon = {
+      x: 50,
+      y: 150,
+      width: 30,
+      height: 24,
+      gravity: 0.35,
+      lift: -6.5,
+      velocity: 0
+    };
+
+    let items = [];
+    let particles = [];
+    let frameCount = 0;
+
+    function jumpDragon() {
+      if (!gameRunning) return;
+      dragon.velocity = dragon.lift;
+    }
+
+    // Controles: Teclado, Clic y Táctil
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && gameRunning) {
+        e.preventDefault();
+        jumpDragon();
+      }
+    });
+
+    canvas.addEventListener('click', () => {
+      if (gameRunning) jumpDragon();
+    });
+
+    canvas.addEventListener('touchstart', (e) => {
+      if (gameRunning) {
+        e.preventDefault();
+        jumpDragon();
+      }
+    }, { passive: false });
+
+    window.startDragonGame = function() {
+      if (gameRunning) cancelAnimationFrame(animationId);
+      gameRunning = true;
+      score = 0;
+      scoreEl.innerText = score;
+      dragon.y = 150;
+      dragon.velocity = 0;
+      items = [];
+      particles = [];
+      frameCount = 0;
+      gameLoop();
+    };
+
+    function drawPixelDragon(x, y) {
+      // Cuerpo
+      ctx.fillStyle = '#c8102e';
+      ctx.fillRect(x + 6, y + 6, 18, 12);
+      // Cabeza
+      ctx.fillRect(x + 20, y + 2, 10, 8);
+      // Ojo
+      ctx.fillStyle = '#d4af37';
+      ctx.fillRect(x + 26, y + 4, 2, 2);
+      // Ala (Efecto aleteo)
+      ctx.fillStyle = '#ff4d6d';
+      const wingOffset = (frameCount % 12 < 6) ? 0 : 4;
+      ctx.fillRect(x + 10, y - 2 + wingOffset, 8, 8);
+      // Cola
+      ctx.fillStyle = '#800020';
+      ctx.fillRect(x, y + 10, 8, 4);
+      ctx.fillRect(x - 4, y + 8, 4, 4);
+    }
+
+    function spawnItem() {
+      if (frameCount % 80 === 0) {
+        items.push({
+          x: canvas.width + 20,
+          y: Math.random() * (canvas.height - 60) + 30,
+          size: 14,
+          speed: 2.5
+        });
+      }
+    }
+
+    function drawHeartItem(item) {
+      ctx.fillStyle = '#ff1e56';
+      const x = item.x;
+      const y = item.y;
+      // Dibujar Corazón Pixel Art
+      ctx.fillRect(x + 2, y, 4, 2);
+      ctx.fillRect(x + 8, y, 4, 2);
+      ctx.fillRect(x, y + 2, 14, 4);
+      ctx.fillRect(x + 2, y + 6, 10, 2);
+      ctx.fillRect(x + 4, y + 8, 6, 2);
+      ctx.fillRect(x + 6, y + 10, 2, 2);
+    }
+
+    function createParticles(x, y) {
+      for (let i = 0; i < 8; i++) {
+        particles.push({
+          x: x,
+          y: y,
+          vx: (Math.random() - 0.5) * 4,
+          vy: (Math.random() - 0.5) * 4,
+          life: 20,
+          color: '#d4af37'
+        });
+      }
+    }
+
+    function updateParticles() {
+      particles.forEach((p, idx) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life--;
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x, p.y, 3, 3);
+        if (p.life <= 0) particles.splice(idx, 1);
+      });
+    }
+
+    function soundCatch() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.1);
+      } catch(e) {}
+    }
+
+    function gameLoop() {
+      if (!gameRunning) return;
+
+      frameCount++;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Fondo de estrellas/chispas pixeladas
+      ctx.fillStyle = 'rgba(212, 175, 55, 0.2)';
+      for (let i = 0; i < 15; i++) {
+        const starX = (frameCount * (i + 1) * 0.5) % canvas.width;
+        const starY = ((i * 37) % canvas.height);
+        ctx.fillRect(canvas.width - starX, starY, 2, 2);
+      }
+
+      // Física del Dragón
+      dragon.velocity += dragon.gravity;
+      dragon.y += dragon.velocity;
+
+      // Colisión con Bordes Superior e Inferior
+      if (dragon.y < 0) {
+        dragon.y = 0;
+        dragon.velocity = 0;
+      }
+      if (dragon.y + dragon.height > canvas.height) {
+        dragon.y = canvas.height - dragon.height;
+        dragon.velocity = 0;
+      }
+
+      // Dibujar Dragón
+      drawPixelDragon(dragon.x, dragon.y);
+
+      // Generar y Actualizar Objetos
+      spawnItem();
+      items.forEach((item, idx) => {
+        item.x -= item.speed;
+        drawHeartItem(item);
+
+        // Detectar Colisión
+        if (
+          dragon.x < item.x + item.size &&
+          dragon.x + dragon.width > item.x &&
+          dragon.y < item.y + item.size &&
+          dragon.y + dragon.height > item.y
+        ) {
+          createParticles(item.x, item.y);
+          soundCatch();
+          items.splice(idx, 1);
+          score++;
+          scoreEl.innerText = score;
+
+          if (score > highScore) {
+            highScore = score;
+            highScoreEl.innerText = highScore;
+          }
+
+          if (score === 10) {
+            ctx.fillStyle = '#d4af37';
+            ctx.font = 'bold 20px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('✨ ¡VICTORIA! Dragón de Amor Completado ✨', canvas.width / 2, canvas.height / 2);
+          }
+        }
+
+        // Eliminar fuera de pantalla
+        if (item.x < -20) items.splice(idx, 1);
+      });
+
+      updateParticles();
+
+      // Render inicial si aún no se gana
+      if (score < 10) {
+        animationId = requestAnimationFrame(gameLoop);
+      } else {
+        gameRunning = false;
+        ctx.fillStyle = '#f8f9fa';
+        ctx.font = '16px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('¡Conquistaste todos los corazones para Alexia!', canvas.width / 2, (canvas.height / 2) + 30);
+      }
+    }
+
+    // Dibujar pantalla de inicio del Canvas
+    ctx.fillStyle = '#d4af37';
+    ctx.font = '16px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Presiona "Iniciar / Reiniciar Juego" para comenzar', canvas.width / 2, canvas.height / 2);
+  })();
+</script>
+<!-- ======================================================= -->
+<!-- FIN: SECCIÓN DEL JUEGO PIXEL DE DRAGONES ROMÁNTICO     -->
+<!-- ======================================================= -->
         <!-- QUIZ CONTAINER SECTION -->
         <section id="quiz-section" class="grimoire-card p-6 sm:p-10 relative">
             <div class="flex justify-between items-center mb-6 border-b border-amber-500/30 pb-4">
