@@ -1,358 +1,369 @@
 <!DOCTYPE html>
-<html lang="es" class="dark">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alejandro & Alexia | Por Siempre y Para Siempre</title>
-    
-    <!-- Tailwind CSS -->
+    <title>Alejandro & Alexia - Por Siempre y Para Siempre</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@600;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,400&family=Rye&display=swap" rel="stylesheet">
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Canvas Confetti -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        crimson: '#8B0000',
-                        deepred: '#3D000A',
-                        vividred: '#E60033',
-                        gold: '#D4AF37',
-                        brightgold: '#FFD700',
-                        softgold: '#F3E5AB',
-                        darkbg: '#080205',
-                        barcablue: '#004D98',
-                        barcared: '#A50044',
-                        cardbg: 'rgba(18, 5, 12, 0.88)'
+                        passion: {
+                            dark: '#1a0105',
+                            deep: '#2D0208',
+                            red: '#8B0000',
+                            bright: '#E60049',
+                            gold: '#D4AF37',
+                            goldlight: '#F3E5AB'
+                        }
                     },
                     fontFamily: {
-                        cinzel: ['Cinzel', 'serif'],
-                        cinzeldec: ['Cinzel Decorative', 'serif'],
-                        playfair: ['Playfair Display', 'serif'],
-                        rye: ['Rye', 'cursive'],
-                        sans: ['Plus Jakarta Sans', 'sans-serif']
+                        serif: ['Georgia', 'serif'],
+                        sans: ['Inter', 'sans-serif']
                     }
                 }
             }
         }
     </script>
-
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Great+Vibes&family=Montserrat:wght@300;400;600;700&display=swap');
+        
         body {
-            background-color: #080205;
-            color: #F3E5AB;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            min-height: 100vh;
+            background-color: #1a0105;
+            color: #f3e5ab;
+            font-family: 'Montserrat', sans-serif;
             overflow-x: hidden;
-            position: relative;
         }
 
-        #bgCanvas {
+        .font-cinzel { font-family: 'Cinzel', serif; }
+        .font-cursive { font-family: 'Great Vibes', cursive; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #2D0208;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #8B0000;
+            border-radius: 4px;
+            border: 1px solid #D4AF37;
+        }
+
+        /* Gold border glows */
+        .gold-glow {
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+        }
+        .gold-border {
+            border: 2px solid #D4AF37;
+        }
+
+        /* Floating Hearts Canvas background */
+        #hearts-canvas, #fireworks-canvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 1;
+            z-index: 0;
         }
 
-        .glass-panel {
-            background: rgba(18, 5, 12, 0.88);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            box-shadow: 0 10px 35px -10px rgba(139, 0, 0, 0.6), 0 0 15px rgba(212, 175, 55, 0.15);
+        .glass-card {
+            background: rgba(45, 2, 8, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 175, 55, 0.4);
         }
 
-        .text-glow-gold {
-            text-shadow: 0 0 12px rgba(212, 175, 55, 0.6), 0 0 25px rgba(255, 215, 0, 0.3);
+        /* Runaway button smoothness */
+        #no-btn {
+            transition: all 0.2s ease-out;
         }
 
-        .text-glow-red {
-            text-shadow: 0 0 12px rgba(230, 0, 51, 0.7), 0 0 25px rgba(139, 0, 0, 0.5);
+        /* Custom Audio animations */
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(230, 0, 73, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(212, 175, 55, 0.8); }
         }
 
-        .wanted-scroll {
-            background: #e8d3a7;
-            background-image: radial-gradient(#d0b885 1px, transparent 0);
-            background-size: 10px 10px;
-            color: #2b1810;
-            border: 8px solid #5a3d28;
-            box-shadow: inset 0 0 30px rgba(0,0,0,0.5), 0 10px 25px rgba(0,0,0,0.8);
-        }
-
-        /* ECG Heartbeat Line effect for Grey's Anatomy */
-        .ecg-line {
-            height: 2px;
-            background: linear-gradient(90deg, transparent 0%, #E60033 20%, #FFD700 50%, #E60033 80%, transparent 100%);
-            position: relative;
-        }
-
-        /* Barça subtle gradient line */
-        .barca-gradient {
-            background: linear-gradient(90deg, #004D98 0%, #E60033 50%, #A50044 100%);
-        }
-
-        .btn-gold-glow {
-            background: linear-gradient(135deg, #D4AF37 0%, #AA7C11 100%);
-            color: #080205;
-            font-weight: 700;
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
-            transition: all 0.3s ease;
-        }
-
-        .btn-gold-glow:hover {
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
-            transform: translateY(-2px);
-        }
-
-        .btn-crimson {
-            background: linear-gradient(135deg, #E60033 0%, #8B0000 100%);
-            box-shadow: 0 0 15px rgba(230, 0, 51, 0.4);
-            transition: all 0.3s ease;
-        }
-
-        .btn-crimson:hover {
-            box-shadow: 0 0 25px rgba(230, 0, 51, 0.8);
-            transform: translateY(-2px);
-        }
-
-        /* Floating Hearts & Stars CSS fallback */
-        @keyframes pulseGlow {
-            0%, 100% { transform: scale(1); opacity: 0.9; }
-            50% { transform: scale(1.05); opacity: 1; }
-        }
-
-        .animate-pulse-glow {
-            animation: pulseGlow 3s infinite ease-in-out;
+        .pulse-card {
+            animation: pulse-glow 3s infinite;
         }
     </style>
 </head>
-<body class="selection:bg-crimson selection:text-softgold">
+<body class="min-h-screen relative pb-20 selection:bg-passion-bright selection:text-white">
 
-    <canvas id="bgCanvas"></canvas>
+    <canvas id="hearts-canvas"></canvas>
+    <canvas id="fireworks-canvas" class="hidden"></canvas>
 
-    <!-- Main Container -->
-    <div class="relative z-10 max-w-4xl mx-auto px-4 py-8 space-y-10">
+    <div class="relative z-10 max-w-4xl mx-auto px-4 py-8 flex flex-col gap-10">
 
-        <header class="text-center space-y-4 pt-6">
-            <!-- Barça & Medical Subtle Accent Line -->
-            <div class="w-full h-1 barca-gradient rounded-full opacity-75"></div>
-            
-            <div class="flex items-center justify-center space-x-3 text-gold text-2xl md:text-3xl">
-                <i class="fa-solid font-dragon fa-dragon text-vividred animate-pulse"></i>
-                <i class="fa-solid fa-crown text-gold"></i>
-                <i class="fa-solid fa-dragon text-vividred animate-pulse"></i>
+        <!-- HEADER SECTION -->
+        <header class="text-center space-y-4 py-8 px-4 glass-card rounded-2xl gold-border gold-glow">
+            <div class="inline-block p-2 rounded-full border border-passion-gold/50 bg-passion-deep/60 mb-2">
+                <i class="fa-solid font-2xl fa-dragon text-passion-gold text-3xl px-2"></i>
+                <i class="fa-solid fa-heart text-passion-bright text-2xl px-1"></i>
+                <i class="fa-solid fa-dragon text-passion-gold text-3xl px-2 transform -scale-x-100 inline-block"></i>
             </div>
-
-            <!-- Main Majestic Title -->
-            <h1 class="font-cinzeldec text-4xl sm:text-6xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-softgold via-brightgold to-gold text-glow-gold tracking-wider">
-                Alejandro & Alexia
+            <h1 class="font-cinzel text-3xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-passion-goldlight via-passion-gold to-yellow-200 tracking-wider">
+                ALEJANDRO & ALEXIA
             </h1>
-
-            <div class="flex items-center justify-center space-x-4">
-                <div class="w-16 h-[1px] bg-gradient-to-r from-transparent to-gold"></div>
-                <i class="fa-solid fa-book-bookmark text-vividred text-sm"></i>
-                <i class="fa-solid fa-heartPulse text-gold text-sm"></i>
-                <i class="fa-solid fa-music text-vividred text-sm"></i>
-                <div class="w-16 h-[1px] bg-gradient-to-l from-transparent to-gold"></div>
-            </div>
-
-            <p class="font-playfair italic text-lg sm:text-2xl text-softgold text-glow-red tracking-wide">
+            <p class="font-cursive text-2xl sm:text-4xl text-passion-bright drop-shadow-md">
                 "Tú y yo estaremos juntos, por siempre y para siempre."
             </p>
+            <div class="w-32 h-1 bg-gradient-to-r from-transparent via-passion-gold to-transparent mx-auto mt-3"></div>
         </header>
 
-        <section class="glass-panel rounded-2xl p-4 sm:p-6 border-gold/40 text-center relative overflow-hidden">
-            <div class="absolute top-2 left-3 text-xs text-gold/60 uppercase tracking-widest font-cinzel">
-                <i class="fa-solid fa-compact-disc fa-spin text-vividred mr-1"></i> Nuestra BSO Oficial
+        <!-- MUSIC PLAYER -->
+        <section class="glass-card rounded-2xl p-5 gold-border shadow-lg flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 rounded-full bg-passion-bright/20 border border-passion-gold flex items-center justify-center animate-spin-slow">
+                    <i class="fa-solid fa-music text-passion-gold text-2xl"></i>
+                </div>
+                <div>
+                    <span class="text-xs text-passion-gold/80 font-semibold tracking-wider uppercase">Nuestro Himno de Amor</span>
+                    <h3 class="font-cinzel text-lg font-bold text-white">Henry Lau - "It's You"</h3>
+                    <p class="text-xs text-gray-300">While You Were Sleeping OST</p>
+                </div>
             </div>
-            
-            <div class="mt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div class="text-left space-y-1">
-                    <h3 class="font-cinzel font-bold text-lg text-brightgold flex items-center gap-2">
-                        <i class="fa-solid fa-music text-vividred"></i> Henry Lau – It's You
-                    </h3>
-                    <p class="text-xs text-softgold/80 italic font-playfair">
-                        While You Were Sleeping OST • Nuestra melodía eterna
+            <div class="w-full md:w-auto flex flex-col items-center gap-2">
+                <button id="toggle-music-btn" onclick="toggleMusic()" class="w-full md:w-auto px-6 py-2.5 bg-gradient-to-r from-passion-red to-passion-bright hover:from-passion-bright hover:to-passion-red text-white font-bold rounded-xl gold-border shadow-md transition-all transform hover:scale-105 flex items-center justify-center gap-2">
+                    <i id="music-icon" class="fa-solid fa-play"></i>
+                    <span id="music-text">Reproducir Música</span>
+                </button>
+            </div>
+            <!-- Hidden YouTube Player Iframe -->
+            <div class="hidden">
+                <div id="yt-player"></div>
+            </div>
+        </section>
+
+        <!-- DRAGON MINI-GAME SECTION -->
+        <section class="glass-card rounded-2xl p-6 gold-border shadow-2xl relative overflow-hidden">
+            <div class="text-center mb-4">
+                <div class="inline-flex items-center justify-center gap-2 text-passion-gold font-cinzel text-xl font-bold">
+                    <i class="fa-solid fa-dragon"></i>
+                    <h2>Guardián del Dragón del Amor</h2>
+                    <i class="fa-solid fa-dragon transform -scale-x-100"></i>
+                </div>
+                <p class="text-xs sm:text-sm text-gray-300 mt-1">
+                    Alexia, vuela el Dragón de Alejandro en el cielo nocturno. ¡Junta <strong class="text-passion-gold">7 Gemas de Corazón</strong> y esquiva las nubes oscuras para ganar tu premio!
+                </p>
+            </div>
+
+            <div class="relative w-full aspect-[4/3] sm:aspect-[16/9] bg-slate-950 rounded-xl overflow-hidden border border-passion-gold/40 shadow-inner flex items-center justify-center" id="game-container">
+                <canvas id="dragon-game-canvas" class="w-full h-full block cursor-pointer"></canvas>
+                
+                <!-- Game Overlay Screen -->
+                <div id="game-overlay" class="absolute inset-0 bg-black/80 flex flex-col items-center justify-center p-6 text-center z-20">
+                    <i class="fa-solid fa-dragon text-passion-gold text-5xl mb-3 animate-bounce"></i>
+                    <h3 class="font-cinzel text-2xl font-bold text-white mb-2">Aventura del Dragón de Alejandro</h3>
+                    <p class="text-sm text-gray-300 max-w-md mb-5">
+                        Usa las flechas del teclado <span class="text-passion-gold">(⬆ ⬇)</span>, arrastra el dedo o pulsa los botones de control para guiar al dragón.
+                    </p>
+                    <button onclick="startDragonGame()" class="px-8 py-3 bg-gradient-to-r from-passion-gold via-yellow-400 to-passion-gold text-passion-deep font-black rounded-full shadow-lg hover:brightness-110 transform hover:scale-105 transition">
+                        <i class="fa-solid fa-play mr-2"></i> ¡Comenzar Vuelo!
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Touch Controls -->
+            <div class="flex justify-center gap-6 mt-4 sm:hidden">
+                <button id="btn-up" class="w-16 h-12 bg-passion-red/80 active:bg-passion-bright text-white rounded-xl border border-passion-gold font-bold text-xl flex items-center justify-center active:scale-95">
+                    <i class="fa-solid fa-arrow-up"></i>
+                </button>
+                <button id="btn-down" class="w-16 h-12 bg-passion-red/80 active:bg-passion-bright text-white rounded-xl border border-passion-gold font-bold text-xl flex items-center justify-center active:scale-95">
+                    <i class="fa-solid fa-arrow-down"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- QUIZ SECTION -->
+        <section class="glass-card rounded-2xl p-6 sm:p-8 gold-border shadow-2xl space-y-6">
+            <div class="text-center border-b border-passion-gold/30 pb-4">
+                <h2 class="font-cinzel text-2xl sm:text-3xl font-bold text-passion-gold">
+                    <i class="fa-solid fa-scroll mr-2"></i> El Cuestionario de Nuestra Historia
+                </h2>
+                <p class="text-sm text-gray-300 mt-1">Demuestra tu conocimiento sobre Alejandro y tú. ¡Consigue 7 aciertos para desbloquear tu carta especial y 11/11 para el cupón definitivo!</p>
+                <div class="mt-3 text-sm font-bold text-passion-bright" id="quiz-score-display">
+                    Aciertos: <span id="score-count">0</span> / 11
+                </div>
+            </div>
+
+            <div id="quiz-container" class="space-y-6">
+                <!-- Questions injected dynamically -->
+            </div>
+        </section>
+
+        <!-- CARTA PARA ALEXIA -->
+        <section id="letter-section" class="glass-card rounded-2xl p-6 sm:p-10 gold-border shadow-2xl text-center relative overflow-hidden transition-all duration-500">
+            <!-- Locked Overlay -->
+            <div id="letter-lock" class="absolute inset-0 bg-passion-dark/95 backdrop-blur-md flex flex-col items-center justify-center p-6 z-20">
+                <div class="w-16 h-16 rounded-full bg-passion-red/30 border border-passion-gold flex items-center justify-center mb-4 text-passion-gold text-3xl">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <h3 class="font-cinzel text-xl font-bold text-passion-gold mb-2">Carta Privada para Alexia</h3>
+                <p class="text-sm text-gray-300 max-w-sm">
+                    Esta carta redactada por Alejandro se desbloqueará cuando respondas correctamente al menos <strong class="text-passion-bright">7 preguntas</strong> del cuestionario.
+                </p>
+                <div class="mt-4 text-xs text-passion-gold/70">Progreso actual: <span id="letter-progress">0</span>/7 aciertos</div>
+            </div>
+
+            <div class="max-w-2xl mx-auto space-y-6">
+                <div class="inline-block border-b-2 border-passion-gold pb-1 px-4">
+                    <h2 class="font-cursive text-4xl text-passion-gold">Carta para Alexia</h2>
+                </div>
+                <p class="font-cinzel text-sm text-passion-goldlight uppercase tracking-widest">A la mujer de mi vida, Alexia Gutiérrez Valerio</p>
+                
+                <div class="text-left text-gray-200 leading-relaxed font-serif space-y-4 text-base sm:text-lg bg-passion-deep/40 p-6 rounded-xl border border-passion-gold/20 shadow-inner">
+                    <p class="first-letter:text-4xl first-letter:font-cursive first-letter:text-passion-gold">
+                        Alexia, Sé perfectamente que nuestra historia ha tenido sus tormentas, momentos oscuros donde el camino pareció perderse. Pero aun en medio de la distancia y las dificultades, jamás hubo una sola duda en mi corazón de que mi lugar es a tu lado.
+                    </p>
+                    <p>
+                        Cada recuerdo, desde la primera recomendación hasta cada risa compartida en nuestras noches en silencio, me confirma que eres y serás siempre la mujer de mi vida.
+                    </p>
+                    <p>
+                        Te amo con toda mi alma, hoy y siempre.
+                    </p>
+                    <p class="text-right font-cursive text-3xl text-passion-gold pt-4">
+                        Atentamente: Alejandro
                     </p>
                 </div>
-                
-                <div class="w-full sm:w-auto">
-                    <iframe style="border-radius:12px" width="100%" height="80" src="https://www.youtube.com/embed/VB9101LT-6E?enablejsapi=1&autoplay=1" title="It's You - Henry Lau" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                </div>
             </div>
         </section>
 
-        <section class="wanted-scroll rounded-xl p-6 md:p-8 text-center space-y-4 relative overflow-hidden">
-            <div class="flex justify-between items-center border-b-2 border-amber-900/40 pb-2">
-                <span class="font-rye text-xs text-amber-900 tracking-widest">GRAND LINE WANTED</span>
-                <i class="fa-solid fa-skull-crossbones text-amber-900 text-lg"></i>
-                <span class="font-rye text-xs text-amber-900 tracking-widest">PIRATES OF LOVE</span>
+        <!-- BENEFICIO EXCLUSIVO (COUPON) -->
+        <section id="coupon-section" class="glass-card rounded-2xl p-6 gold-border text-center relative overflow-hidden">
+            <div id="coupon-lock" class="absolute inset-0 bg-passion-dark/95 backdrop-blur-md flex flex-col items-center justify-center p-6 z-20">
+                <i class="fa-solid fa-gem text-passion-gold text-4xl mb-2"></i>
+                <h3 class="font-cinzel text-lg font-bold text-passion-gold">Beneficio Exclusivo</h3>
+                <p class="text-xs text-gray-300 max-w-xs mt-1">Obtén 11/11 aciertos en el cuestionario para obtener el Cupón de Victoria Absoluta.</p>
             </div>
 
-            <h2 class="font-rye text-4xl sm:text-5xl font-extrabold text-amber-950 tracking-widest">
-                WANTED
-            </h2>
-
-            <div class="border-4 border-amber-900/60 p-2 bg-amber-100/50 rounded-lg max-w-sm mx-auto shadow-inner">
-                <div class="bg-amber-950/10 py-8 px-4 rounded border border-amber-900/30 text-center space-y-2">
-                    <i class="fa-solid fa-dragon text-5xl text-amber-900/80 mb-2"></i>
-                    <p class="font-cinzel font-bold text-2xl text-amber-950">ALEXIA</p>
-                    <p class="font-playfair italic text-sm text-amber-900">"La dueña absoluta del corazón de Alejandro"</p>
-                </div>
-            </div>
-
-            <div class="space-y-1 pt-2">
-                <p class="font-rye text-xs text-amber-900 uppercase">RECOMPENSA DE AMOR RECLAMABLE</p>
-                <p class="font-rye text-2xl sm:text-3xl text-amber-950 tracking-wider">
-                    ฿ 11,08,2017,000,-
+            <div class="p-4 border-2 border-dashed border-passion-gold rounded-xl bg-gradient-to-r from-passion-deep via-passion-red/40 to-passion-deep">
+                <span class="bg-passion-gold text-passion-dark text-xs font-black uppercase px-3 py-1 rounded-full">Pase de Victoria Absoluta</span>
+                <h3 class="font-cinzel text-2xl font-bold text-white mt-3">CUPÓN DE ALEJANDRO</h3>
+                <p class="text-sm text-passion-goldlight italic mt-2">
+                    "Válido por un perdón total e instantáneo en cualquier discusión, cumpliendo cualquier deseo o antojo de Alexia Gutiérrez Valerio."
                 </p>
+                <div class="text-xs text-gray-400 mt-4">Código: <span class="font-mono text-passion-gold">ALEXIA-REINA-ETERNA</span></div>
             </div>
-
-            <p class="font-serif text-xs text-amber-900/80 italic">
-                Buscada viva para recibir amor eterno, protección firme y todas las partidas de Parchís/Pool prometidas.
-            </p>
         </section>
 
-        <section id="quizSection" class="glass-panel rounded-3xl p-6 sm:p-10 border-gold/40 relative">
-            <div class="flex items-center justify-between border-b border-gold/20 pb-4 mb-6">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid font-cinzel fa-scroll text-gold text-xl"></i>
-                    <h2 class="font-cinzel text-xl sm:text-2xl font-bold text-brightgold">Nuestro Quiz de Historia</h2>
-                </div>
-                <span id="quizCounter" class="font-cinzel text-xs sm:text-sm bg-crimson/60 border border-gold/40 text-softgold px-3 py-1 rounded-full">
-                    Pregunta 1 de 11
+        <!-- FINAL PROPOSAL SECTION -->
+        <section class="glass-card rounded-2xl p-8 gold-border gold-glow text-center space-y-6 relative overflow-hidden">
+            <div class="text-passion-gold text-4xl mb-2 animate-bounce">
+                <i class="fa-solid fa-crown"></i>
+            </div>
+            <h2 id="proposal-heading" class="font-cinzel text-2xl sm:text-4xl font-extrabold text-white leading-tight">
+                Alexia Gutiérrez Valerio, <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-passion-goldlight via-passion-gold to-yellow-200">
+                    ¿Aceptas ser la mujer de Alejandro y caminar a su lado para siempre?
                 </span>
-            </div>
-
-            <!-- Question Card Body -->
-            <div id="quizBody" class="space-y-6">
-                <h3 id="questionTitle" class="font-playfair text-xl sm:text-2xl font-semibold text-softgold leading-relaxed">
-                    Cargando historia...
-                </h3>
-
-                <div id="optionsGrid" class="grid grid-cols-1 gap-4">
-                    <!-- Dynamic Buttons Generated Here -->
-                </div>
-            </div>
-
-            <!-- Quiz Footer Progress -->
-            <div class="mt-8 pt-4 border-t border-gold/15 flex justify-between items-center text-xs text-softgold/60">
-                <span class="flex items-center gap-1"><i class="fa-solid fa-bolt text-gold"></i> Responde con el corazón</span>
-                <span id="scoreTracker" class="font-bold text-gold">Aciertos: 0 / 11</span>
-            </div>
-        </section>
-
-        <section class="glass-panel rounded-3xl p-6 sm:p-8 border-gold/40 text-center space-y-5 relative overflow-hidden">
-            <div class="absolute -top-10 -right-10 w-32 h-32 bg-gold/10 rounded-full blur-2xl"></div>
-
-            <div class="inline-flex items-center gap-2 bg-gold/10 border border-gold/30 px-4 py-1.5 rounded-full text-gold font-cinzel text-xs tracking-wider">
-                <i class="fa-solid fa-ticket"></i> Recompensa Exclusiva
-            </div>
-
-            <h2 class="font-cinzel text-2xl sm:text-3xl font-bold text-brightgold text-glow-gold">
-                Pase de Victoria Absoluta
             </h2>
 
-            <p class="font-playfair italic text-softgold text-base sm:text-lg max-w-xl mx-auto">
-                "Cupón de Alejandro" — Válido para exigir lo que tú desees, en el momento exacto que quieras, respaldado por mi mando, cariño y palabra de honor.
-            </p>
-
-            <div id="couponStatusBox" class="p-4 rounded-xl bg-crimson/20 border border-vividred/40 text-sm font-semibold text-vividred max-w-md mx-auto space-y-2">
-                <p><i class="fa-solid fa-lock mr-2"></i> Bloqueado: Debes acertar 11/11 en el Quiz de Historia para desbloquearlo.</p>
-            </div>
-
-            <button id="btnCoupon" disabled onclick="claimCoupon()" class="px-8 py-3.5 rounded-full font-cinzel font-bold text-sm tracking-wider uppercase disabled:opacity-40 disabled:cursor-not-allowed btn-gold-glow">
-                <i class="fa-solid fa-hand-holding-heart mr-2"></i> Reclamar Victoria
-            </button>
-        </section>
-
-        <section class="glass-panel rounded-3xl p-8 sm:p-12 border-gold/50 text-center space-y-8 relative overflow-hidden">
-            <div class="ecg-line w-full"></div>
-
-            <div class="space-y-4">
-                <i class="fa-solid fa-ring text-4xl sm:text-5xl text-gold animate-bounce"></i>
-                <h2 class="font-cinzeldec text-3xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-softgold via-brightgold to-gold text-glow-gold">
-                    Alexia, mi amada mujer...
-                </h2>
-                <p class="font-playfair italic text-xl sm:text-2xl text-softgold/90">
-                    ¿Aceptas ser mi esposa y caminar a mi lado para siempre?
-                </p>
-            </div>
-
-            <div class="btn-container flex flex-wrap items-center justify-center gap-6 pt-4 relative min-h-[100px]">
-                <button onclick="acceptProposal()" class="btn-crimson px-10 py-4 rounded-full font-cinzel font-bold text-base sm:text-lg text-white tracking-widest uppercase">
-                    <i class="fa-solid fa-heart mr-2"></i> ¡Sí, acepto!
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-6 pt-4 min-h-[100px] relative" id="proposal-buttons-wrapper">
+                <button id="yes-btn" onclick="acceptProposal()" class="px-10 py-4 bg-gradient-to-r from-passion-gold via-yellow-400 to-passion-gold text-passion-deep font-black text-xl rounded-full shadow-2xl hover:scale-110 transition duration-300 border-2 border-white cursor-pointer z-10">
+                    ¡Sí, acepto! <i class="fa-solid fa-heart ml-2 text-passion-bright"></i>
                 </button>
 
-                <button id="btnNo" class="px-8 py-3 rounded-full font-cinzel font-semibold text-sm bg-gray-800/80 border border-gray-600 text-gray-300 transition-all duration-150 absolute sm:static">
+                <button id="no-btn" class="px-8 py-3 bg-gray-700/80 text-gray-300 font-bold rounded-full border border-gray-500 z-10 cursor-pointer">
                     No
                 </button>
             </div>
-
-            <div class="ecg-line w-full"></div>
         </section>
-
-        <footer class="text-center text-xs text-gold/50 space-y-1 pb-6 font-cinzel">
-            <p>Diseñado especialmente por Alejandro para su amada Alexia</p>
-            <p class="italic text-softgold/40">11 de Agosto • Por siempre y para siempre</p>
-        </footer>
     </div>
 
-    <div id="feedbackModal" class="fixed inset-0 bg-darkbg/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-        <div class="glass-panel border-2 border-gold rounded-3xl p-6 sm:p-8 max-w-md w-full text-center space-y-5 shadow-2xl relative animate-pulse-glow">
-            <div id="modalIcon" class="text-5xl"></div>
-            <h3 id="modalTitle" class="font-cinzel text-2xl font-bold text-brightgold"></h3>
-            <p id="modalBody" class="font-playfair text-lg text-softgold leading-relaxed"></p>
-            <button onclick="closeModal()" class="btn-gold-glow px-8 py-3 rounded-full font-cinzel font-bold text-xs tracking-widest uppercase w-full">
+    <!-- REWARD MODAL (DRAGON GAME) -->
+    <div id="dragon-reward-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card rounded-2xl max-w-md w-full p-6 text-center gold-border gold-glow space-y-4 transform animate-scaleUp">
+            <div class="w-16 h-16 mx-auto rounded-full bg-passion-bright/30 border-2 border-passion-gold flex items-center justify-center text-passion-gold text-3xl">
+                <i class="fa-solid fa-dragon"></i>
+            </div>
+            <h3 class="font-cinzel text-2xl font-bold text-passion-gold">¡Victoria Voladora!</h3>
+            <p class="text-gray-100 text-lg leading-snug">
+                ¡Has conquistado al Dragón de Alejandro! <br>
+                <strong class="text-passion-bright block mt-2">Recompensa: Protección eterna y besos infinitos.</strong>
+            </p>
+            <button onclick="closeDragonModal()" class="px-6 py-2.5 bg-gradient-to-r from-passion-gold to-yellow-500 text-passion-deep font-bold rounded-xl shadow-md">
                 Continuar
             </button>
         </div>
     </div>
 
+    <!-- MARRIAGE ACCEPTED MODAL -->
+    <div id="marriage-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-gradient-to-b from-white via-amber-50 to-yellow-100 border-4 border-yellow-500 rounded-3xl max-w-lg w-full p-8 text-center text-gray-900 shadow-2xl space-y-6 transform animate-scaleUp">
+            <div class="text-5xl text-yellow-600 animate-bounce">
+                <i class="fa-solid fa-rings-wedding"></i> 👑
+            </div>
+            <h3 class="font-cinzel text-3xl font-black text-amber-900">¡UNIÓN ETERNA DECLARADA!</h3>
+            <div class="w-20 h-1 bg-yellow-500 mx-auto"></div>
+            <p class="font-serif text-lg leading-relaxed text-amber-950">
+                Hoy se hace oficial en el cielo y en la tierra: <br>
+                <strong class="text-2xl font-bold text-amber-900 block my-2">Alexia Gutiérrez Valerio</strong>
+                ha aceptado ser <strong class="text-amber-800">la mujer de Alejandro</strong> para siempre.
+            </p>
+            <p class="font-cursive text-3xl text-amber-800">
+                Juntos por siempre y para siempre.
+            </p>
+            <button onclick="closeMarriageModal()" class="px-8 py-3 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-full shadow-lg text-lg">
+                Celebrar Nuestro Amor <i class="fa-solid fa-sparkles ml-2"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
     <script>
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        let audioCtx;
+        /* WEB AUDIO API SOUND EFFECTS */
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
 
         function initAudio() {
             if (!audioCtx) {
-                audioCtx = new AudioContext();
+                audioCtx = new AudioCtx();
             }
             if (audioCtx.state === 'suspended') {
                 audioCtx.resume();
             }
         }
 
-        // Realistic Spank Sound ("Nalgada")
+        // Kiss Sound Effect
+        function playKissSound() {
+            initAudio();
+            if (!audioCtx) return;
+            
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1);
+            osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.2);
+
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.2);
+        }
+
+        // Spank / Error Sound Effect
         function playSpankSound() {
             initAudio();
-            const now = audioCtx.currentTime;
+            if (!audioCtx) return;
 
-            // Low thump oscillator
-            const osc = audioCtx.createOscillator();
-            const oscGain = audioCtx.createGain();
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(140, now);
-            osc.frequency.exponentialRampToValueAtTime(30, now + 0.15);
-
-            oscGain.gain.setValueAtTime(0.8, now);
-            oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
-
-            osc.connect(oscGain);
-            oscGain.connect(audioCtx.destination);
-            osc.start(now);
-            osc.stop(now + 0.15);
-
-            // Impact Noise burst
-            const bufferSize = audioCtx.sampleRate * 0.1;
+            const bufferSize = audioCtx.sampleRate * 0.15;
             const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
             const data = buffer.getChannelData(0);
             for (let i = 0; i < bufferSize; i++) {
@@ -362,317 +373,526 @@
             const noise = audioCtx.createBufferSource();
             noise.buffer = buffer;
 
-            const noiseFilter = audioCtx.createBiquadFilter();
-            noiseFilter.type = 'bandpass';
-            noiseFilter.frequency.setValueAtTime(800, now);
-            noiseFilter.Q.setValueAtTime(1.5, now);
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.value = 800;
 
-            const noiseGain = audioCtx.createGain();
-            noiseGain.gain.setValueAtTime(0.9, now);
-            noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-
-            noise.connect(noiseFilter);
-            noiseFilter.connect(noiseGain);
-            noiseGain.connect(audioCtx.destination);
-
-            noise.start(now);
-        }
-
-        // Sweet Kiss Sound ("Sonido de besos")
-        function playKissSound() {
-            initAudio();
-            const now = audioCtx.currentTime;
-
-            const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
+            gain.gain.setValueAtTime(0.6, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
 
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(450, now);
-            osc.frequency.exponentialRampToValueAtTime(1200, now + 0.12);
-
-            gain.gain.setValueAtTime(0.4, now);
-            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
-
-            osc.connect(gain);
+            noise.connect(filter);
+            filter.connect(gain);
             gain.connect(audioCtx.destination);
 
-            osc.start(now);
-            osc.stop(now + 0.12);
+            noise.start();
         }
 
-        const canvas = document.getElementById('bgCanvas');
-        const ctx = canvas.getContext('2d');
-        let width = canvas.width = window.innerWidth;
-        let height = canvas.height = window.innerHeight;
+        /* YOUTUBE PLAYER CONFIGURATION */
+        let ytPlayer = null;
+        let isPlaying = false;
 
-        window.addEventListener('resize', () => {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-        });
+        // Load YouTube IFrame API
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-        const particles = Array.from({ length: 45 }, () => ({
-            x: Math.random() * width,
-            y: Math.random() * height,
-            size: Math.random() * 8 + 4,
-            speed: Math.random() * 1.2 + 0.4,
-            opacity: Math.random() * 0.6 + 0.2,
-            isHeart: Math.random() > 0.4
-        }));
-
-        function drawParticles() {
-            ctx.clearRect(0, 0, width, height);
-            particles.forEach(p => {
-                ctx.fillStyle = p.isHeart ? `rgba(230, 0, 51, ${p.opacity})` : `rgba(212, 175, 55, ${p.opacity})`;
-                ctx.beginPath();
-                if (p.isHeart) {
-                    // Simple heart shape
-                    ctx.arc(p.x, p.y, p.size / 2, 0, Math.PI * 2);
-                } else {
-                    ctx.arc(p.x, p.y, p.size / 3, 0, Math.PI * 2);
-                }
-                ctx.fill();
-
-                p.y -= p.speed;
-                if (p.y < -20) {
-                    p.y = height + 20;
-                    p.x = Math.random() * width;
+        function onYouTubeIframeAPIReady() {
+            ytPlayer = new YT.Player('yt-player', {
+                height: '0',
+                width: '0',
+                videoId: 'f94f9uKmL6s', // Henry Lau - It's You
+                playerVars: {
+                    'autoplay': 0,
+                    'controls': 0,
+                    'loop': 1,
+                    'playlist': 'f94f9uKmL6s'
                 }
             });
-            requestAnimationFrame(drawParticles);
         }
-        drawParticles();
 
-        const questions = [
+        function toggleMusic() {
+            initAudio();
+            const icon = document.getElementById('music-icon');
+            const text = document.getElementById('music-text');
+            if (!ytPlayer) return;
+
+            if (isPlaying) {
+                ytPlayer.pauseVideo();
+                icon.className = 'fa-solid fa-play';
+                text.innerText = 'Reproducir Música';
+                isPlaying = false;
+            } else {
+                ytPlayer.playVideo();
+                icon.className = 'fa-solid fa-pause';
+                text.innerText = 'Pausar Música';
+                isPlaying = true;
+            }
+        }
+
+        /* FLOATING HEARTS BACKGROUND CANVAS */
+        const canvas = document.getElementById('hearts-canvas');
+        const ctx = canvas.getContext('2d');
+        let hearts = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class HeartParticle {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + 20;
+                this.size = Math.random() * 15 + 8;
+                this.speedY = Math.random() * 1.5 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.8;
+                this.opacity = Math.random() * 0.5 + 0.3;
+            }
+            update() {
+                this.y -= this.speedY;
+                this.x += this.speedX;
+                if (this.y < -20) this.reset();
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = '#E60049';
+                ctx.beginPath();
+                const x = this.x, y = this.y, s = this.size;
+                ctx.moveTo(x, y);
+                ctx.bezierCurveTo(x - s/2, y - s/2, x - s, y + s/3, x, y + s);
+                ctx.bezierCurveTo(x + s, y + s/3, x + s/2, y - s/2, x, y);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        for (let i = 0; i < 35; i++) {
+            hearts.push(new HeartParticle());
+        }
+
+        function animateHearts() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            hearts.forEach(h => {
+                h.update();
+                h.draw();
+            });
+            requestAnimationFrame(animateHearts);
+        }
+        animateHearts();
+
+        /* DRAGON MINI-GAME LOGIC */
+        const gameCanvas = document.getElementById('dragon-game-canvas');
+        const gctx = gameCanvas.getContext('2d');
+        let gameRunning = false;
+        let dragonY = 150;
+        let dragonVelocity = 0;
+        let collectedHearts = 0;
+        let gameItems = [];
+        let gameAnimationId = null;
+
+        function resizeGameCanvas() {
+            const container = document.getElementById('game-container');
+            gameCanvas.width = container.clientWidth;
+            gameCanvas.height = container.clientHeight;
+        }
+        window.addEventListener('resize', resizeGameCanvas);
+        resizeGameCanvas();
+
+        function startDragonGame() {
+            initAudio();
+            document.getElementById('game-overlay').classList.add('hidden');
+            dragonY = gameCanvas.height / 2;
+            dragonVelocity = 0;
+            collectedHearts = 0;
+            gameItems = [];
+            gameRunning = true;
+            spawnGameItems();
+            if (gameAnimationId) cancelAnimationFrame(gameAnimationId);
+            dragonGameLoop();
+        }
+
+        function spawnGameItems() {
+            if (!gameRunning) return;
+            // Spawn hearts or clouds randomly
+            const isHeart = Math.random() > 0.4;
+            gameItems.push({
+                x: gameCanvas.width + 30,
+                y: Math.random() * (gameCanvas.height - 60) + 30,
+                type: isHeart ? 'heart' : 'cloud',
+                speed: Math.random() * 2 + 2.5,
+                size: isHeart ? 18 : 28
+            });
+            if (gameRunning) setTimeout(spawnGameItems, 1200);
+        }
+
+        // Key controls
+        const keys = {};
+        window.addEventListener('keydown', (e) => { keys[e.code] = true; });
+        window.addEventListener('keyup', (e) => { keys[e.code] = false; });
+
+        // Touch buttons
+        const btnUp = document.getElementById('btn-up');
+        const btnDown = document.getElementById('btn-down');
+        let touchUp = false, touchDown = false;
+        if (btnUp && btnDown) {
+            btnUp.addEventListener('touchstart', (e) => { e.preventDefault(); touchUp = true; });
+            btnUp.addEventListener('touchend', () => touchUp = false);
+            btnDown.addEventListener('touchstart', (e) => { e.preventDefault(); touchDown = true; });
+            btnDown.addEventListener('touchend', () => touchDown = false);
+        }
+
+        function dragonGameLoop() {
+            if (!gameRunning) return;
+
+            gctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+
+            // Controls adjustment
+            if (keys['ArrowUp'] || keys['KeyW'] || touchUp) dragonY -= 4;
+            if (keys['ArrowDown'] || keys['KeyS'] || touchDown) dragonY += 4;
+
+            // Boundaries
+            dragonY = Math.max(25, Math.min(gameCanvas.height - 25, dragonY));
+
+            // Draw Dragon (Alexia's Dragon)
+            gctx.save();
+            gctx.translate(60, dragonY);
+            // Draw Wings
+            gctx.fillStyle = '#D4AF37';
+            gctx.beginPath();
+            gctx.ellipse(-5, -5 + Math.sin(Date.now() * 0.01) * 8, 18, 8, -Math.PI / 4, 0, Math.PI * 2);
+            gctx.fill();
+            // Body
+            gctx.fillStyle = '#E60049';
+            gctx.beginPath();
+            gctx.arc(0, 0, 16, 0, Math.PI * 2);
+            gctx.fill();
+            // Eyes
+            gctx.fillStyle = '#FFF';
+            gctx.beginPath();
+            gctx.arc(6, -4, 4, 0, Math.PI * 2);
+            gctx.fill();
+            gctx.fillStyle = '#000';
+            gctx.beginPath();
+            gctx.arc(7, -4, 2, 0, Math.PI * 2);
+            gctx.fill();
+            // Snout / Horns
+            gctx.fillStyle = '#D4AF37';
+            gctx.beginPath();
+            gctx.moveTo(-10, -12);
+            gctx.lineTo(-16, -22);
+            gctx.lineTo(-4, -14);
+            gctx.fill();
+            gctx.restore();
+
+            // Update & Draw Items
+            for (let i = gameItems.length - 1; i >= 0; i--) {
+                const item = gameItems[i];
+                item.x -= item.speed;
+
+                if (item.type === 'heart') {
+                    // Glowing Heart
+                    gctx.save();
+                    gctx.fillStyle = '#FF2E63';
+                    gctx.shadowColor = '#FF2E63';
+                    gctx.shadowBlur = 10;
+                    gctx.beginPath();
+                    const s = item.size;
+                    gctx.arc(item.x - s/4, item.y - s/4, s/2, 0, Math.PI * 2);
+                    gctx.arc(item.x + s/4, item.y - s/4, s/2, 0, Math.PI * 2);
+                    gctx.fill();
+                    gctx.restore();
+                } else {
+                    // Cloud
+                    gctx.fillStyle = '#3A3F58';
+                    gctx.beginPath();
+                    gctx.arc(item.x, item.y, item.size, 0, Math.PI * 2);
+                    gctx.arc(item.x + 12, item.y - 10, item.size * 0.7, 0, Math.PI * 2);
+                    gctx.arc(item.x - 12, item.y - 10, item.size * 0.7, 0, Math.PI * 2);
+                    gctx.fill();
+                }
+
+                // Collision Detection
+                const dist = Math.hypot(item.x - 60, item.y - dragonY);
+                if (dist < item.size + 16) {
+                    if (item.type === 'heart') {
+                        playKissSound();
+                        collectedHearts++;
+                        gameItems.splice(i, 1);
+                        if (collectedHearts >= 7) {
+                            gameRunning = false;
+                            document.getElementById('dragon-reward-modal').classList.remove('hidden');
+                        }
+                    } else {
+                        playSpankSound();
+                        // Push back on storm collision
+                        dragonY += 15;
+                        gameItems.splice(i, 1);
+                    }
+                } else if (item.x < -40) {
+                    gameItems.splice(i, 1);
+                }
+            }
+
+            // Draw Score
+            gctx.fillStyle = '#D4AF37';
+            gctx.font = 'bold 16px Montserrat';
+            gctx.fillText(`Corazones de Alejandro: ${collectedHearts} / 7`, 15, 30);
+
+            gameAnimationId = requestAnimationFrame(dragonGameLoop);
+        }
+
+        function closeDragonModal() {
+            document.getElementById('dragon-reward-modal').classList.add('hidden');
+            document.getElementById('game-overlay').classList.remove('hidden');
+        }
+
+        /* QUIZ DATA AND SYSTEM */
+        const quizQuestions = [
             {
-                q: "1. ¿Cómo se encendió la chispa de nuestra historia?",
+                q: "1) ¿Cómo se encendió la chispa de esta historia?",
                 options: [
-                    { text: "A) En un debate en un grupo de Facebook sobre la Liga Kalos, donde se discutió si Ash ganaría la liga y Alexia tenía razón.", correct: true },
-                    { text: "B) En una publicación sobre si Serena y Ash volverán a verse.", correct: false },
-                    { text: "C) En un debate con Max y Joako sobre quién es la waifu más bonita de Pokémon.", correct: false }
-                ]
+                    "A) En un debate en un grupo de Facebook sobre la Liga Kalos de Pokémon, donde un simple comentario conectó dos vidas para siempre.",
+                    "B) En una fiesta entre amigos en común.",
+                    "C) Por un mensaje equivocado en Instagram."
+                ],
+                correct: 0
             },
             {
-                q: "2. ¿Cuál fue el primer manga que le recomendó Alejandro a Alexia?",
+                q: "2) ¿Cuál fue el primer manga que le recomendó Alejandro a Alexia?",
                 options: [
-                    { text: "A) Tokio Ghoul", correct: true },
-                    { text: "B) Domestic na Kanojo", correct: false },
-                    { text: "C) Jujutsu Kaisen", correct: false }
-                ]
+                    "A) Tokio Ghoul",
+                    "B) Naruto",
+                    "C) Attack on Titan"
+                ],
+                correct: 0
             },
             {
-                q: "3. ¿Cuál fue nuestro primer apodo?",
+                q: "3) ¿Cuál fue nuestro primer apodo?",
                 options: [
-                    { text: "A) Honey y Darling", correct: true },
-                    { text: "B) Amo y Sumisa", correct: false },
-                    { text: "C) Amor y bebecita", correct: false }
-                ]
+                    "A) Honey y Darling",
+                    "B) Amor y Cielo",
+                    "C) Bebé y Papi"
+                ],
+                correct: 0
             },
             {
-                q: "4. ¿Cuál fue nuestro primer drama de romance?",
+                q: "4) ¿Cuál fue nuestro primer drama de romance?",
                 options: [
-                    { text: "A) While You Were Sleeping", correct: false },
-                    { text: "B) The Heirs", correct: true },
-                    { text: "C) Pinocchio", correct: false }
-                ]
+                    "A) Boys Over Flowers",
+                    "B) The Heirs",
+                    "C) Goblin"
+                ],
+                correct: 1
             },
             {
-                q: "5. ¿Cuál es nuestro anime en común favorito?",
+                q: "5) ¿Cuál es nuestro anime en común favorito?",
                 options: [
-                    { text: "A) Sword Art Online", correct: true },
-                    { text: "B) Clannad", correct: false },
-                    { text: "C) Kuzu no Honkai", correct: false }
-                ]
+                    "A) Sword Art Online",
+                    "B) Demon Slayer",
+                    "C) One Piece"
+                ],
+                correct: 0
             },
             {
-                q: "6. ¿Cuál fue nuestro juego favorito en común?",
+                q: "6) ¿Cuál fue nuestro juego favorito en común?",
                 options: [
-                    { text: "A) Free Fire", correct: true },
-                    { text: "B) Clash of Clans", correct: false },
-                    { text: "C) Clash Royale", correct: false }
-                ]
+                    "A) Free Fire",
+                    "B) Call of Duty Mobile",
+                    "C) PUBG"
+                ],
+                correct: 0
             },
             {
-                q: "7. Cuando la pantalla se enciende para una partida de Parchís o Pool, ¿cuál es la ley?",
+                q: "7) Cuando la pantalla se enciende para una partida de Parchís o Pool, ¿cuál es la ley?",
                 options: [
-                    { text: "A) Se compite sin piedad; hay apuestas en juego, rivalidad pura y la victoria se celebra como se debe.", correct: true },
-                    { text: "B) Alejandro vence a todos y gana la apuesta.", correct: false },
-                    { text: "C) Alexia se burla del rival y baja el nivel por estar discutiendo.", correct: false }
-                ]
+                    "A) Se compite sin piedad ni compasión, como verdaderos rivales de honor.",
+                    "B) Nos dejamos ganar por amor.",
+                    "C) Jugamos siempre en el mismo equipo."
+                ],
+                correct: 0
             },
             {
-                q: "8. ¿Cuál es el himno absoluto de nuestra historia de amor?",
+                q: "8) ¿Cuál es el himno absoluto de nuestra historia de amor?",
                 options: [
-                    { text: "A) It's You – Henry Lau (While You Were Sleeping)", correct: true },
-                    { text: "B) Nothing Like Us – Justin Bieber", correct: false },
-                    { text: "C) Die In Your Arms – Justin Bieber", correct: false }
-                ]
+                    "A) It's You – Henry Lau",
+                    "B) Perfect – Ed Sheeran",
+                    "C) All of Me – John Legend"
+                ],
+                correct: 0
             },
             {
-                q: "9. Cuando el día termina y el mundo se queda en silencio, ¿cuál es nuestro refugio?",
+                q: "9) Cuando el día termina y el mundo se queda en silencio, ¿cuál es nuestro refugio?",
                 options: [
-                    { text: "A) Conectarnos en nuestro propio universo: un buen drama coreano, la música exacta y charlas sinceras que arreglan el alma.", correct: true },
-                    { text: "B) Compartir vídeos de Instagram y TikTok en WhatsApp.", correct: false },
-                    { text: "C) Dormir en llamada.", correct: false }
-                ]
+                    "A) Conectarnos en nuestro propio universo a través de una llamada, donde solo existimos tú y yo.",
+                    "B) Ver una película en silencio.",
+                    "C) Dormir temprano."
+                ],
+                correct: 0
             },
             {
-                q: "10. En esta relación, ¿quién lleva el mando y la dirección?",
+                q: "10) En esta relación, ¿quién lleva el mando y la dirección?",
                 options: [
-                    { text: "A) Alejandro, cuando toma las decisiones con carácter y protege lo que es suyo.", correct: true },
-                    { text: "B) Alejandro, cuando impone las reglas del juego y reclama sus victorias.", correct: true },
-                    { text: "C) Alejandro, cuando demuestra con actos firmes que su amor no se negocia.", correct: true }
-                ]
+                    "A) Alejandro",
+                    "B) Alexia",
+                    "C) Ambos como un equipo invencible"
+                ],
+                correct: [0, 1, 2] // All correct
             },
             {
-                q: "11. ¿Cuál fue nuestra fecha especial?",
+                q: "11) ¿Cuál fue nuestra fecha especial?",
                 options: [
-                    { text: "A) 11 de abril", correct: false },
-                    { text: "B) 11 de agosto", correct: true },
-                    { text: "C) 11 de octubre", correct: false }
-                ]
+                    "A) 14 de febrero",
+                    "B) 11 de agosto",
+                    "C) 25 de diciembre"
+                ],
+                correct: 1
             }
         ];
 
-        let currentQ = 0;
-        let score = 0;
-        let pendingCallback = null;
+        let currentScore = 0;
+        const answeredState = {};
 
-        function renderQuestion() {
-            const qData = questions[currentQ];
-            document.getElementById('quizCounter').innerText = `Pregunta ${currentQ + 1} de ${questions.length}`;
-            document.getElementById('questionTitle').innerText = qData.q;
-            
-            const grid = document.getElementById('optionsGrid');
-            grid.innerHTML = '';
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
 
-            qData.options.forEach(opt => {
-                const btn = document.createElement('button');
-                btn.className = "w-full text-left p-4 rounded-xl bg-white/5 border border-gold/20 hover:border-gold hover:bg-crimson/20 transition-all font-sans text-sm sm:text-base text-softgold flex items-center justify-between group";
-                btn.innerHTML = `<span>${opt.text}</span> <i class="fa-solid fa-chevron-right text-xs opacity-0 group-hover:opacity-100 transition-opacity text-gold"></i>`;
-                btn.onclick = () => handleAnswer(opt.correct);
-                grid.appendChild(btn);
+            quizQuestions.forEach((qObj, index) => {
+                const card = document.createElement('div');
+                card.className = "bg-passion-deep/60 p-5 rounded-xl border border-passion-gold/30 space-y-3";
+                
+                const qTitle = document.createElement('h3');
+                qTitle.className = "font-cinzel text-lg font-bold text-passion-goldlight";
+                qTitle.innerText = qObj.q;
+                card.appendChild(qTitle);
+
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = "space-y-2";
+
+                qObj.options.forEach((optText, optIdx) => {
+                    const btn = document.createElement('button');
+                    btn.className = "w-full text-left p-3 rounded-lg border border-passion-gold/20 bg-passion-dark/50 hover:bg-passion-red/40 transition text-sm text-gray-200 cursor-pointer flex items-center justify-between";
+                    btn.innerText = optText;
+                    btn.id = `q-${index}-opt-${optIdx}`;
+
+                    btn.onclick = () => handleAnswer(index, optIdx, btn);
+                    optionsDiv.appendChild(btn);
+                });
+
+                card.appendChild(optionsDiv);
+                container.appendChild(card);
             });
         }
 
-        function handleAnswer(isCorrect) {
+        function handleAnswer(qIndex, selectedOpt, buttonEl) {
+            if (answeredState[qIndex]) return; // prevent re-answering
+            answeredState[qIndex] = true;
+
+            const qObj = quizQuestions[qIndex];
+            const isCorrect = Array.isArray(qObj.correct) ? qObj.correct.includes(selectedOpt) : qObj.correct === selectedOpt;
+
             if (isCorrect) {
-                score++;
                 playKissSound();
-                document.getElementById('scoreTracker').innerText = `Aciertos: ${score} / ${questions.length}`;
+                buttonEl.classList.remove('bg-passion-dark/50', 'hover:bg-passion-red/40');
+                buttonEl.classList.add('bg-emerald-900/80', 'border-emerald-400', 'text-white', 'font-bold');
+                buttonEl.innerHTML += ` <i class="fa-solid fa-heart text-pink-400 ml-2"></i>`;
                 
-                showModal(
-                    "💋",
-                    "¡CORRECTO, MI AMOR!",
-                    `¡Acertaste perfectamente! Llevas <b>${score} acierto(s)</b>. Demuestras una vez más lo especial e inteligente que eres para mí.`
-                );
+                currentScore++;
+                document.getElementById('score-count').innerText = currentScore;
+                
+                // Show compliment popup for Alejandro's woman
+                setTimeout(() => {
+                    alert(`¡Correcto, mi reina! Alexia Gutiérrez Valerio, eres la mujer más sabia e increíble para Alejandro. 💕✨`);
+                }, 100);
+
             } else {
                 playSpankSound();
-                showModal(
-                    "😈🔥",
-                    "¡RESPUESTA INCORRECTA!",
-                    "¡Te equivocaste mi sumisa! Alejandro te va a nalguear 😈🔥"
-                );
+                buttonEl.classList.remove('bg-passion-dark/50', 'hover:bg-passion-red/40');
+                buttonEl.classList.add('bg-rose-900/80', 'border-rose-500', 'text-white');
+                buttonEl.innerHTML += ` <i class="fa-solid fa-xmark text-red-400 ml-2"></i>`;
+
+                setTimeout(() => {
+                    alert("¡Te equivocaste! Alejandro te va a nalguear 😈🔥 (Aprende la lección, mi sumisa)");
+                }, 100);
             }
 
-            pendingCallback = () => {
-                currentQ++;
-                if (currentQ < questions.length) {
-                    renderQuestion();
-                } else {
-                    finishQuiz();
-                }
-            };
+            // Check Unlocks
+            checkUnlocks();
         }
 
-        function finishQuiz() {
-            const quizBody = document.getElementById('quizBody');
-            const perfect = (score === questions.length);
-
-            if (perfect) {
-                document.getElementById('btnCoupon').disabled = false;
-                document.getElementById('couponStatusBox').className = "p-4 rounded-xl bg-green-950/40 border border-green-500/50 text-sm font-semibold text-green-400 max-w-md mx-auto space-y-1";
-                document.getElementById('couponStatusBox').innerHTML = "<p><i class='fa-solid fa-unlock mr-2'></i> ¡CUPÓN DESBLOQUEADO! Has acertado 11/11. Puedes reclamarlo ahora.</p>";
-            } else {
-                document.getElementById('couponStatusBox').innerHTML = `<p><i class="fa-solid fa-lock mr-2"></i> Tuviste ${questions.length - score} error(es). Para desbloquear el cupón debes tener 11/11.</p><button onclick="restartQuiz()" class="mt-2 text-xs underline font-bold text-gold">Volver a intentar Quiz</button>`;
+        function checkUnlocks() {
+            // Update Letter unlock
+            document.getElementById('letter-progress').innerText = currentScore;
+            if (currentScore >= 7) {
+                document.getElementById('letter-lock').classList.add('hidden');
             }
 
-            quizBody.innerHTML = `
-                <div class="text-center space-y-4 py-6">
-                    <i class="fa-solid fa-trophy text-5xl text-brightgold"></i>
-                    <h3 class="font-cinzel text-2xl font-bold text-brightgold">¡Quiz Completado!</h3>
-                    <p class="font-playfair italic text-softgold text-lg">
-                        ${perfect ? '¡Perfecto, mi linda niña! Conoces cada capítulo de nuestra vida juntos.' : 'Estuviste muy cerca, mi vida.'}
-                    </p>
-                    <div class="inline-block bg-crimson/30 border border-gold/40 px-6 py-2 rounded-full font-cinzel text-xl text-gold font-bold">
-                        Puntaje Final: ${score} / ${questions.length}
-                    </div>
-                </div>
-            `;
+            // Update Coupon unlock
+            if (currentScore === 11) {
+                document.getElementById('coupon-lock').classList.add('hidden');
+            }
         }
 
-        function restartQuiz() {
-            currentQ = 0;
-            score = 0;
-            document.getElementById('scoreTracker').innerText = `Aciertos: 0 / ${questions.length}`;
-            renderQuestion();
-        }
+        renderQuiz();
 
-        const btnNo = document.getElementById('btnNo');
-
+        /* RUNAWAY "NO" BUTTON LOGIC */
+        const noBtn = document.getElementById('no-btn');
+        
         function moveNoButton() {
-            const x = Math.random() * 200 - 100;
-            const y = Math.random() * 100 - 50;
-            btnNo.style.transform = `translate(${x}px, ${y}px)`;
+            const x = Math.random() * (window.innerWidth - 120) - (window.innerWidth / 2) + 60;
+            const y = Math.random() * 200 - 100;
+            noBtn.style.transform = `translate(${x}px, ${y}px)`;
         }
 
-        btnNo.addEventListener('mouseenter', moveNoButton);
-        btnNo.addEventListener('touchstart', (e) => {
+        noBtn.addEventListener('mouseenter', moveNoButton);
+        noBtn.addEventListener('touchstart', (e) => {
             e.preventDefault();
             moveNoButton();
         });
 
-        function showModal(icon, title, body) {
-            document.getElementById('modalIcon').innerHTML = icon;
-            document.getElementById('modalTitle').innerHTML = title;
-            document.getElementById('modalBody').innerHTML = body;
-            document.getElementById('feedbackModal').classList.remove('hidden');
-        }
-
-        function closeModal() {
-            document.getElementById('feedbackModal').classList.add('hidden');
-            if (pendingCallback) {
-                const cb = pendingCallback;
-                pendingCallback = null;
-                cb();
-            }
-        }
-
-        function claimCoupon() {
-            playKissSound();
-            showModal(
-                "👑",
-                "¡PASE DE VICTORIA ACTIVADO!",
-                "Has reclamado oficialmente tu Pase de Victoria Absoluta. Como tu hombre y protector, cumpliré tu exigencia de inmediato cuando la solicites."
-            );
-        }
-
+        /* PROPOSAL ACCEPTANCE TRANSFORMATION */
         function acceptProposal() {
+            initAudio();
             playKissSound();
+
+            // Fire confetti and fireworks
             confetti({
-                particleCount: 120,
-                spread: 80,
+                particleCount: 150,
+                spread: 100,
                 origin: { y: 0.6 }
             });
 
-            showModal(
-                "💍✨",
-                "¡OFICIALMENTE MIS ESPOSOS!",
-                "Has dicho que SÍ. Prometo cuidar de ti, amarte, respetarte y caminar a tu lado por el resto de nuestras vidas, Alexia. Por siempre y para siempre."
-            );
+            // Show Marriage Modal
+            document.getElementById('marriage-modal').classList.remove('hidden');
+
+            // Transform entire page styling to royal white & gold
+            document.body.style.backgroundColor = '#FFFDF0';
+            document.body.style.color = '#3B2F15';
+
+            const glassCards = document.querySelectorAll('.glass-card');
+            glassCards.forEach(card => {
+                card.style.background = 'rgba(255, 255, 255, 0.9)';
+                card.style.borderColor = '#D4AF37';
+                card.style.color = '#3B2F15';
+            });
+
+            document.getElementById('proposal-heading').className = "font-cinzel text-3xl sm:text-5xl font-black text-amber-900";
+            document.getElementById('proposal-heading').innerHTML = "¡ACAPTASTE SER LA MUJER DE ALEJANDRO PARA SIEMPRE! 👑❤️";
+            
+            // Hide No button
+            noBtn.classList.add('hidden');
         }
 
-        // Initialize quiz on load
-        renderQuestion();
+        function closeMarriageModal() {
+            document.getElementById('marriage-modal').classList.add('hidden');
+        }
     </script>
 </body>
 </html>
